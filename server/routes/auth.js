@@ -24,22 +24,22 @@ router.post("/register", async (req, res) => {
 
 // User Login
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   try {
     const [rows] = await db.query(
-      "SELECT id, name, email, role FROM users WHERE email = ? AND password = ?",
-      [email, password]
+      "SELECT id, name, email, role FROM users WHERE email = ? AND password = ? AND role = ?",
+      [email, password, role]
     );
 
     let user = null;
     if (rows.length > 0) {
       user = rows[0];
-    } else if (email === "admin@diet.com") {
+    } else if (email === "admin@diet.com" && role === "admin") {
       // Demo fallback
       const [demoUser] = await db.query(
-        "SELECT id, name, email, role FROM users WHERE email = ?",
-        [email]
+        "SELECT id, name, email, role FROM users WHERE email = ? AND role = ?",
+        [email, "admin"]
       );
       if (demoUser.length > 0) {
         user = demoUser[0];

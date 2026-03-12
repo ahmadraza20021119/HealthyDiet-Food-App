@@ -125,19 +125,22 @@
 
 .option-card {
     background: var(--bg-secondary);
-    border: 1.5px solid var(--border-color);
+    border: 2px solid var(--border-color);
     color: var(--text-primary);
 }
 
 .option-card:hover {
     border-color: var(--accent-primary);
     background: var(--card-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
 }
 
 .option-card.active {
-    background: var(--bg-secondary);
+    background: rgba(16, 185, 129, 0.08);
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px var(--accent-primary);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15), inset 0 0 0 1px var(--accent-primary);
+    transform: scale(1.02);
 }
 
 .opt-text span {
@@ -147,13 +150,18 @@
 .pill-selector button {
     background: var(--card-bg);
     color: var(--text-primary);
-    border: 1.5px solid var(--border-color);
+    border: 2px solid var(--border-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .pill-selector button.active {
     background: var(--accent-primary);
     color: white;
     border-color: var(--accent-primary);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    transform: translateY(-2px);
 }
 
 .quiz-btn.primary {
@@ -270,6 +278,18 @@
     font-size: 13px;
 }
 
+.checkmark-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    margin-left: auto;
+}
+
 .goals-section {
     display: flex;
     flex-direction: column;
@@ -320,6 +340,33 @@
     color: var(--text-secondary);
     font-size: 16px;
     margin-bottom: 30px;
+}
+
+.quiz-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.skip-quiz-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: all 0.3s ease;
+}
+
+.skip-quiz-btn:hover {
+    color: var(--text-primary);
+}
+
+.pill-selector.wrapped {
+    justify-content: flex-start;
 }
 
 @media (max-width: 600px) {
