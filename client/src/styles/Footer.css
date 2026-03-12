@@ -1,0 +1,232 @@
+.footer-modern {
+    background: #111827;
+    /* Deep Navy/Charcoal */
+    color: #fff;
+    padding: 80px 5% 40px;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative background glow */
+.footer-modern::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(212, 252, 121, 0.1) 0%, transparent 70%);
+    z-index: 0;
+}
+
+.footer-top {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1.2fr;
+    gap: 50px;
+    position: relative;
+    z-index: 1;
+}
+
+.footer-brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.footer-logo {
+    font-size: 28px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+}
+
+.logo-text-pt1 {
+    color: #fff;
+}
+
+.logo-text-pt2 {
+    color: #d4fc79;
+}
+
+.footer-tagline {
+    color: #9ca3af;
+    line-height: 1.6;
+    font-size: 15px;
+    max-width: 350px;
+}
+
+.social-links-modern {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.social-links-modern a {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.social-links-modern a:hover {
+    background: #d4fc79;
+    color: #111827;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(212, 252, 121, 0.2);
+}
+
+.footer-links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.footer-nav-col h4,
+.footer-newsletter h4 {
+    font-size: 18px;
+    margin-bottom: 25px;
+    color: #fff;
+    font-weight: 600;
+    position: relative;
+}
+
+.footer-nav-col h4::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 30px;
+    height: 2px;
+    background: #d4fc79;
+}
+
+.footer-nav-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-nav-col ul li {
+    margin-bottom: 15px;
+}
+
+.footer-nav-col ul li a {
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.footer-nav-col ul li a:hover {
+    color: #d4fc79;
+    padding-left: 5px;
+}
+
+.footer-newsletter {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer-newsletter p {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.newsletter-input {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.newsletter-input input {
+    background: transparent;
+    border: none;
+    padding: 10px 15px;
+    color: #fff;
+    flex: 1;
+    outline: none;
+}
+
+.newsletter-btn {
+    background: #d4fc79;
+    color: #111827;
+    border: none;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.newsletter-btn:hover {
+    background: #c3eb68;
+}
+
+.footer-badges {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.badge-item {
+    padding: 8px 15px;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.badge-item:hover {
+    border-color: #d4fc79;
+}
+
+.footer-bottom-bar {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+    .footer-top {
+        grid-template-columns: 1fr 1.5fr;
+    }
+
+    .footer-newsletter {
+        grid-column: span 2;
+        max-width: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-top {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .footer-links-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-newsletter {
+        grid-column: span 1;
+    }
+}

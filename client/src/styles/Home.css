@@ -1,0 +1,60 @@
+/* Home.css - Styling for the Home Page */
+
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Home Page Container */
+.home-container {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+/* Heading Styles */
+.home-title {
+    font-size: 2.5rem;
+    color: #27ae60; /* Green color for a healthy feel */
+    margin-bottom: 10px;
+}
+
+/* Subtitle */
+.home-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* CTA Button */
+.cta-button {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    background-color: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.cta-button:hover {
+    background-color: #219150;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .home-title {
+        font-size: 2rem;
+    }
+
+    .cta-button {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+}
