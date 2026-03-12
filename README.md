@@ -106,4 +106,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
+
+👩‍💻 Author
+
+Ahmad Raza
+B.Tech Student | Frontend / Full Stack Developer
+
+“Develop through a rich learning experience.”
+
+
 Built with ❤️ for a healthier lifestyle.
