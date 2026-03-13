@@ -34,8 +34,8 @@ HealthyDiet is a premium, full-stack web application designed to help users mana
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/diet-food-app.git
-cd diet-food-app
+git clone https://github.com/ahmadraza20021119/HealthyDiet-Food-App.git
+cd HealthyDiet-Food-App
 ```
 
 ### 2. Backend Setup
@@ -77,7 +77,7 @@ cd diet-food-app
 ## 📂 Project Structure
 
 ```bash
-diet-food-app/
+HealthyDiet-Food-App/
 ├── client/              # React frontend
 │   ├── public/          # Static assets
 │   └── src/             # Frontend source code

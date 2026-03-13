@@ -7,19 +7,21 @@ router.get('/products', async (req, res) => {
   const { goal, type } = req.query;
   try {
     let sql = "SELECT * FROM products";
+    const conditions = [];
     const params = [];
 
-    if (goal || type) {
-      sql += " WHERE";
-      if (goal) {
-        sql += " health_goal = ?";
-        params.push(goal);
-      }
-      if (type) {
-        if (goal) sql += " AND";
-        sql += " dietary_preference = ?";
-        params.push(type);
-      }
+    if (goal && goal !== 'maintenance') {
+      conditions.push("health_goal = ?");
+      params.push(goal);
+    }
+    
+    if (type && type !== 'standard') {
+      conditions.push("dietary_preference = ?");
+      params.push(type);
+    }
+
+    if (conditions.length > 0) {
+      sql += " WHERE " + conditions.join(" AND ");
     }
 
     const [rows] = await db.query(sql, params);

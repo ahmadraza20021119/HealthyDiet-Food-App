@@ -6,7 +6,7 @@ import "../styles/Chatbot.css";
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Hey there! I am your Personal Trainer. Ready to crush some diet goals today?' }
+        { role: 'assistant', content: 'Hey there! I am your AI Personal Trainer. Ready to crush some diet or workout goals today?' }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -84,7 +84,7 @@ const Chatbot = () => {
                     <form className="chat-input-area" onSubmit={handleSend}>
                         <input
                             type="text"
-                            placeholder="Ask about meal plans..."
+                            placeholder="Ask about meal plans or workouts..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                         />

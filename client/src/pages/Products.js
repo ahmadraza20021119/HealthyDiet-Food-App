@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Star, Clock, Plus, Filter, Sparkles } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 import "../styles/App.css";
 
 const Products = () => {
@@ -11,6 +12,61 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [viewAll, setViewAll] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  
+  const [aiSuggestion, setAiSuggestion] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [chefChat, setChefChat] = useState([]);
+  const [chefChatInput, setChefChatInput] = useState('');
+  const [chefChatLoading, setChefChatLoading] = useState(false);
+
+  const fetchAiSuggestion = useCallback(async (userInfo) => {
+    setAiLoading(true);
+    try {
+      const resp = await fetch("http://localhost:5000/api/ai/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "As my elite Executive Chef and Clinical Nutritionist, please provide EXACTLY 5 distinct, delicious, and highly specific recipe recommendations I can cook at home that fit my exact profile. Provide a brief 3-step cooking instruction for each, and briefly explain why they fit my metabolic goals.",
+          userProfile: userInfo
+        })
+      });
+      const data = await resp.json();
+      setAiSuggestion(data.reply);
+    } catch (e) {
+      console.error("Error fetching AI suggestion:", e);
+    } finally {
+      setAiLoading(false);
+    }
+  }, []);
+
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setAiSuggestion(null);
+    try {
+      let url = "http://localhost:5000/products";
+      const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+
+      if (!viewAll) {
+        const goal = userInfo.healthGoal;
+        const type = userInfo.dietaryPreference;
+        if (goal || type) {
+          url += `?goal=${goal}&type=${type}`;
+        }
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+      setProducts(data);
+
+      if (!viewAll && Object.keys(userInfo).length > 0) {
+        fetchAiSuggestion(userInfo);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
+    }
+  }, [viewAll, fetchAiSuggestion]);
 
   useEffect(() => {
     // Check if user is admin
@@ -35,31 +91,7 @@ const Products = () => {
     }
 
     fetchProducts();
-  }, [navigate, viewAll, isAdmin]);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      let url = "http://localhost:5000/products";
-
-      if (!viewAll) {
-        const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
-        const goal = userInfo.healthGoal;
-        const type = userInfo.dietaryPreference;
-        if (goal || type) {
-          url += `?goal=${goal}&type=${type}`;
-        }
-      }
-
-      const response = await fetch(url);
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setTimeout(() => setLoading(false), 800);
-    }
-  };
+  }, [navigate, viewAll, isAdmin, fetchProducts]);
 
   const handleAddToCart = (e, product) => {
     e.stopPropagation();
@@ -81,6 +113,37 @@ const Products = () => {
       origin: { y: rect.top / window.innerHeight, x: rect.left / window.innerWidth },
       colors: ['#10b981', '#3b82f6', '#ffffff']
     });
+  };
+
+  const handleChefChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chefChatInput.trim()) return;
+
+    const userMessage = { role: 'user', content: chefChatInput };
+    setChefChat(prev => [...prev, userMessage]);
+    setChefChatInput('');
+    setChefChatLoading(true);
+
+    const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+    const context = `Context: We are discussing these recipes: \n ${aiSuggestion} \n\n User Question: ${chefChatInput}`;
+
+    try {
+      const resp = await fetch("http://localhost:5000/api/ai/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: context,
+          userProfile: userInfo
+        })
+      });
+      const data = await resp.json();
+      setChefChat(prev => [...prev, { role: 'chef', content: data.reply }]);
+    } catch (err) {
+      console.error("Chef chat error:", err);
+      setChefChat(prev => [...prev, { role: 'chef', content: 'Apologies, my kitchen is currently overwhelmed!' }]);
+    } finally {
+      setChefChatLoading(false);
+    }
   };
 
   const SkeletonItem = () => (
@@ -164,17 +227,69 @@ const Products = () => {
             </motion.div>
           ))
         ) : (
-          <div className="no-products">
+          <div className="no-products" style={{ gridColumn: '1 / -1' }}>
             <div className="no-products-icon">🍽️</div>
             <h3>No meals found</h3>
-            <p>{viewAll ? "Our kitchen is prepping something new! Check back soon." : "Try adjusting your dietary preferences or view all meals."}</p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
+            <p>{viewAll ? "Our kitchen is prepping something new! Check back soon." : "We don't have a pre-made meal fitting your exact criteria right now."}</p>
+            
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '30px' }}>
               {!viewAll && <button className="btn-modern-outline" onClick={() => setViewAll(true)}>View All Meals</button>}
               <button className="btn-modern" onClick={() => navigate('/userinfo')}>Update Profile</button>
             </div>
           </div>
         )}
       </div>
+
+      {!viewAll && (
+        <motion.div 
+          className="ai-suggestion-box" 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ marginTop: '40px', background: 'var(--bg-secondary)', padding: '25px', borderRadius: '20px', textAlign: 'left', border: '1.5px solid var(--accent-primary)', maxWidth: '1000px', margin: '40px auto 0' }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontSize: '18px', margin: 0 }}><Sparkles size={20} color="#10b981"/> Chef's Custom Recipes</h4>
+          </div>
+          {aiLoading ? (
+            <p style={{fontStyle:'italic', color:'var(--text-secondary)'}}>Chef is reviewing your profile and designing 5 custom recipes...</p>
+          ) : aiSuggestion ? (
+            <div>
+              <div className="message-content" style={{color:'var(--text-primary)', fontSize:'15px', lineHeight:'1.8'}}>
+                <ReactMarkdown>{aiSuggestion}</ReactMarkdown>
+              </div>
+              
+              <div style={{ marginTop: '30px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
+                <h4 style={{ color: 'var(--text-primary)', marginBottom: '15px', fontSize: '16px' }}>Discuss these recipes with the Chef</h4>
+                
+                <div style={{ maxHeight: '250px', overflowY: 'auto', marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {chefChat.map((msg, i) => (
+                     <div key={i} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', background: msg.role === 'user' ? 'var(--accent-primary)' : 'var(--bg-primary)', color: msg.role === 'user' ? 'white' : 'var(--text-primary)', padding: '10px 15px', borderRadius: '15px', maxWidth: '80%', fontSize: '14px', border: msg.role === 'user' ? 'none' : '1px solid var(--border-color)' }}>
+                       <b style={{display: 'block', marginBottom: '4px'}}>{msg.role === 'user' ? 'You' : 'Chef'}:</b> 
+                       <div className="message-content">
+                         <ReactMarkdown>{msg.content}</ReactMarkdown>
+                       </div>
+                     </div>
+                  ))}
+                  {chefChatLoading && <div style={{ alignSelf: 'flex-start', color: 'var(--text-secondary)', fontSize: '13px', fontStyle: 'italic' }}>Chef is typing...</div>}
+                </div>
+
+                <form onSubmit={handleChefChatSubmit} style={{ display: 'flex', gap: '10px' }}>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Can I substitute chicken with tofu in recipe #2?" 
+                    value={chefChatInput}
+                    onChange={(e) => setChefChatInput(e.target.value)}
+                    style={{ flex: 1, padding: '12px 15px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                  <button type="submit" disabled={chefChatLoading || !chefChatInput.trim()} className="btn-modern" style={{ padding: '0 20px', borderRadius: '12px' }}>Send</button>
+                </form>
+              </div>
+            </div>
+          ) : (
+            <p style={{color:'var(--text-secondary)'}}>Unable to generate a recipe at this time.</p>
+          )}
+        </motion.div>
+      )}
     </div>
   );
 };

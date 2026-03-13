@@ -9,36 +9,42 @@ router.post('/recommend', async (req, res) => {
 
     if (!apiKey || apiKey.includes('your_')) {
         return res.json({
-            reply: `[Demo Mode] As a Smart Diet AI. (Please add a valid Gemini API key).`
+            reply: `[Demo Mode v2] As your AI Coach. (Please add a valid Gemini API key).`
         });
     }
 
-    const prompt = `You are a high-performance Personal Trainer. 
-    User Question: "${message}"
-    User Profile: ${JSON.stringify(userProfile)}
-    
-    STRICT RESPONSE RULES:
-    1. Be concise. Max 3-5 sentences or short bullets.
-    2. NO conversational filler (e.g., "Alright Ahmed", "I'm thrilled to help"). Get straight to the point.
-    3. Use clear formatting (bullets or numbered lists) for recommendations.
-    4. Provide specific, actionable advice.
-    5. Formatting: Use Markdown (bolding for titles, lists for steps).`;
-
-    // Modern list of models to try in order of preference
     const modelsToTry = [
-        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-001",
         "gemini-1.5-flash",
-        "gemini-1.5-pro",
-        "gemini-pro"
+        "gemini-1.5-pro"
     ];
+
+    const systemInstruction = `You are a world-class AI Fitness & Nutrition Coach. 
+    You have DUAL expertise as a Master Personal Trainer and Clinical Nutritionist.
+    MANDATORY: If asked for a workout, provide a full professional routine. NEVER redirect to nutrition.`;
+
+    const instructions = `
+    INSTRUCTIONS:
+    1. You are a DUAL EXPERT (Trainer + Nutritionist).
+    2. If the user asks for a workout (e.g. "chest workout"), provide a professional routine (Exercises, Sets, Reps, Tips).
+    3. DO NOT redirect a fitness query to nutrition.
+    4. Provide recipes ONLY for food queries.
+    5. Be authoritative and motivating.
+    `;
+
+    const userMessage = `${instructions}\n\nUser Profile: ${JSON.stringify(userProfile)}\n\nUser Question: "${message}"`;
 
     const genAI = new GoogleGenerativeAI(apiKey);
 
     for (const modelName of modelsToTry) {
         try {
             console.log(`Attempting Gemini with model: ${modelName}`);
-            const model = genAI.getGenerativeModel({ model: modelName });
-            const result = await model.generateContent(prompt);
+            const model = genAI.getGenerativeModel({ 
+                model: modelName,
+                systemInstruction: systemInstruction
+            });
+            const result = await model.generateContent(userMessage);
             const response = await result.response;
             const text = response.text();
 
