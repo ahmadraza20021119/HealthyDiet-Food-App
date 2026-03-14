@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
+import { Trash2, ShoppingBag, ArrowLeft, Star, Clock } from "lucide-react";
 import "../styles/MealDetail.css";
 
 const MealDetail = () => {
@@ -12,6 +13,7 @@ const MealDetail = () => {
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [instructions, setInstructions] = useState("");
+    const [cart, setCart] = useState([]);
 
     // Review states
     const [reviewRating, setReviewRating] = useState(5);
@@ -35,20 +37,22 @@ const MealDetail = () => {
             }
         };
         fetchProduct();
-    }, [id]);
+        const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+        setCart(storedCart);
+    }, []);
 
     const addToCart = (e) => {
-        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        const itemKey = `${product.id}-${instructions}`; // Unique per instruction
-        const existingItem = cart.find(item => item.id === product.id && item.instructions === instructions);
+        const updatedCart = [...cart];
+        const existingItem = updatedCart.find(item => item.id === product.id && item.instructions === instructions);
 
         if (existingItem) {
             existingItem.quantity += quantity;
         } else {
-            cart.push({ ...product, quantity: quantity, instructions: instructions });
+            updatedCart.push({ ...product, quantity: quantity, instructions: instructions });
         }
 
-        localStorage.setItem("cart", JSON.stringify(cart));
+        setCart(updatedCart);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
 
         // Confetti effect
         const rect = e.target.getBoundingClientRect();
@@ -117,6 +121,12 @@ const MealDetail = () => {
         } catch (error) {
             console.error("Update error:", error);
         }
+    };
+
+    const removeFromCart = () => {
+        const updatedCart = cart.filter(item => item.id !== product.id);
+        setCart(updatedCart);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
     };
 
     const resetForm = () => {
@@ -190,9 +200,15 @@ const MealDetail = () => {
                             <span className="qty-val">{quantity}</span>
                             <button onClick={() => setQuantity(quantity + 1)}>+</button>
                         </div>
-                        <button className="add-to-cart-hero" onClick={addToCart}>
-                            Add to Cart • ₹{product.price * quantity}
-                        </button>
+                        {cart.some(item => item.id === product.id) ? (
+                            <button className="remove-from-cart-hero" onClick={removeFromCart}>
+                                Remove from Cart
+                            </button>
+                        ) : (
+                            <button className="add-to-cart-hero" onClick={addToCart}>
+                                Add to Cart • ₹{product.price * quantity}
+                            </button>
+                        )}
                     </div>
 
                     <div className="tags-row">

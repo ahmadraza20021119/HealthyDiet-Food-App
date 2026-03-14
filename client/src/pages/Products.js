@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
-import { Star, Clock, Plus, Filter, Sparkles } from "lucide-react";
+import { Star, Clock, Plus, Filter, Sparkles, Trash2 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import "../styles/App.css";
 
@@ -12,6 +12,7 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [viewAll, setViewAll] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [cart, setCart] = useState([]);
   
   const [aiSuggestion, setAiSuggestion] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
@@ -90,29 +91,40 @@ const Products = () => {
       }
     }
 
+    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCart(storedCart);
+
     fetchProducts();
   }, [navigate, viewAll, isAdmin, fetchProducts]);
 
   const handleAddToCart = (e, product) => {
     e.stopPropagation();
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingItem = cart.find(item => item.id === product.id);
+    const updatedCart = [...cart];
+    const existingItem = updatedCart.find(item => item.id === product.id);
 
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      cart.push({ ...product, quantity: 1 });
+      updatedCart.push({ ...product, quantity: 1 });
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
 
-    const rect = e.target.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: rect.top / window.innerHeight, x: rect.left / window.innerWidth },
       colors: ['#10b981', '#3b82f6', '#ffffff']
     });
+  };
+
+  const handleRemoveFromCart = (e, productId) => {
+    e.stopPropagation();
+    const updatedCart = cart.filter(item => item.id !== productId);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const handleChefChatSubmit = async (e) => {
@@ -219,9 +231,15 @@ const Products = () => {
                     <span><Star size={14} fill="currentColor" /> {product.rating || "4.8"}</span>
                     <span><Clock size={14} /> {product.duration || "20m"}</span>
                   </div>
-                  <button className="add-cart-mini" onClick={(e) => handleAddToCart(e, product)}>
-                    <Plus size={20} />
-                  </button>
+                  {cart.some(item => item.id === product.id) ? (
+                    <button className="remove-cart-mini" onClick={(e) => handleRemoveFromCart(e, product.id)} title="Remove from cart">
+                      <Trash2 size={20} />
+                    </button>
+                  ) : (
+                    <button className="add-cart-mini" onClick={(e) => handleAddToCart(e, product)} title="Add to cart">
+                      <Plus size={20} />
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>

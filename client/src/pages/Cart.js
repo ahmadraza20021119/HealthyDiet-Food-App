@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, X, Plus, Minus, ArrowRight, ShieldCheck } from "lucide-react";
+import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck } from "lucide-react";
 import confetti from "canvas-confetti";
 import "../styles/App.css";
 
@@ -83,7 +83,7 @@ const Cart = () => {
                                             ₹{item.price * item.quantity}
                                         </div>
                                         <button className="cart-remove-btn" onClick={() => removeFromCart(item.id)}>
-                                            <X size={18} />
+                                            <Trash2 size={18} />
                                         </button>
                                     </motion.div>
                                 ))

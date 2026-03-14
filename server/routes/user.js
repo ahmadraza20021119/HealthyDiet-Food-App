@@ -14,7 +14,6 @@ router.post("/userinfo", async (req, res) => {
 
     // For demo, just store in localStorage or something, but since server, just respond
     // Comment out DB insert to prevent crash
-    /*
     const [result] = await db.query(
       `INSERT INTO user_info 
         (name, age, gender, weight, height, activity_level, health_goal, dietary_preference, allergies, food_intake)
@@ -25,7 +24,6 @@ router.post("/userinfo", async (req, res) => {
         allergies, foodIntake
       ]
     );
-    */
 
     res.json({ message: 'User info saved successfully', insertId: 1 });
   } catch (error) {

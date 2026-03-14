@@ -146,6 +146,25 @@
     box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
 }
 
+.remove-from-cart-hero {
+    flex: 1;
+    background: #fff1f2;
+    color: #e11d48;
+    border: 1px solid #ffe4e6;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.remove-from-cart-hero:hover {
+    background: #e11d48;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(225, 29, 72, 0.2);
+}
+
 /* Review Section */
 .reviews-section-modern {
     margin-top: 100px;
