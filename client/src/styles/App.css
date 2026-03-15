@@ -605,6 +605,12 @@ textarea::placeholder {
   justify-content: center;
 }
 
+[data-theme='dark'] .remove-cart-mini {
+  background: rgba(225, 29, 72, 0.1);
+  color: #fb7185;
+  border-color: rgba(225, 29, 72, 0.2);
+}
+
 .remove-cart-mini:hover {
   background: #e11d48;
   color: white;
@@ -946,20 +952,56 @@ textarea::placeholder {
 .cart-qty-controls {
   display: flex;
   align-items: center;
-  background: var(--bg-secondary);
-  border-radius: 12px;
-  padding: 5px;
-  gap: 10px;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 6px;
+  gap: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme='dark'] .cart-qty-controls {
+  background: #1e293b;
+  border-color: #334155;
 }
 
 .cart-qty-controls button {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: var(--card-bg);
-  color: var(--text-primary);
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.qty-val {
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 24px;
+  text-align: center;
+}
+
+[data-theme='dark'] .cart-qty-controls button {
+  background: #334155;
+  color: #ffffff;
+  border-color: #475569;
+}
+
+.cart-qty-controls button svg {
+  stroke-width: 2.5px;
+}
+
+.cart-qty-controls button:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+  transform: scale(1.05);
 }
 
 .cart-summary-card {
@@ -1210,7 +1252,7 @@ textarea::placeholder {
 */
 
 /* 1. Global Utility/Secondary Buttons (Navbar Style) */
-button:not(.cta-btn.primary):not(.add-to-cart-hero):not(.checkout-btn-modern):not(.add-cart-mini):not(.btn-modern):not(.theme-toggle):not(.mobile-toggle):not(.nav-logout-btn),
+button:not(.cta-btn.primary):not(.add-to-cart-hero):not(.checkout-btn-modern):not(.add-cart-mini):not(.btn-modern):not(.theme-toggle):not(.mobile-toggle):not(.nav-logout-btn):not(.cart-remove-btn):not(.cart-qty-btn),
 .p-btn-edit,
 .update-quiz-btn,
 .save-btn-p,
@@ -1245,7 +1287,7 @@ button:not(.cta-btn.primary):not(.add-to-cart-hero):not(.checkout-btn-modern):no
 }
 
 /* 2. Global Hover Logic */
-button:not(.cta-btn.primary):not(.add-to-cart-hero):not(.checkout-btn-modern):not(.add-cart-mini):hover,
+button:not(.cta-btn.primary):not(.add-to-cart-hero):not(.checkout-btn-modern):not(.add-cart-mini):not(.cart-remove-btn):not(.cart-qty-btn):hover,
 .p-btn-edit:hover,
 .update-quiz-btn:hover,
 .save-btn-p:hover,
@@ -1531,25 +1573,36 @@ button:active {
 }
 
 .cart-remove-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
-  background: #fff1f2;
-  color: #e11d48;
-  border: 1px solid #ffe4e6;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.cart-remove-btn svg {
+  stroke-width: 2.5px;
+}
+
+[data-theme='dark'] .cart-remove-btn {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fb7185;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .cart-remove-btn:hover {
-  background: #e11d48;
-  color: white;
-  border-color: #e11d48;
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
 }
 
 .cart-item-subtotal {

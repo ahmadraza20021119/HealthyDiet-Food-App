@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck } from "lucide-react";
-import confetti from "canvas-confetti";
 import "../styles/App.css";
 
 const Cart = () => {
@@ -75,15 +74,19 @@ const Cart = () => {
                                             <div className="cart-item-price-mobile">₹{item.price}</div>
                                         </div>
                                         <div className="cart-qty-controls">
-                                            <button onClick={() => updateQuantity(item.id, item.quantity - 1)}><Minus size={14} /></button>
-                                            <span>{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)}><Plus size={14} /></button>
+                                            <button className="cart-qty-btn" onClick={() => updateQuantity(item.id, item.quantity - 1)} aria-label="Decrease quantity">
+                                                <Minus size={18} />
+                                            </button>
+                                            <span className="qty-val">{item.quantity}</span>
+                                            <button className="cart-qty-btn" onClick={() => updateQuantity(item.id, item.quantity + 1)} aria-label="Increase quantity">
+                                                <Plus size={18} />
+                                            </button>
                                         </div>
                                         <div className="cart-item-subtotal">
                                             ₹{item.price * item.quantity}
                                         </div>
-                                        <button className="cart-remove-btn" onClick={() => removeFromCart(item.id)}>
-                                            <Trash2 size={18} />
+                                        <button className="cart-remove-btn" onClick={() => removeFromCart(item.id)} aria-label="Remove item">
+                                            <Trash2 size={20} />
                                         </button>
                                     </motion.div>
                                 ))

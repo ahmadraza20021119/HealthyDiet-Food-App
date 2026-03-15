@@ -118,13 +118,29 @@
 .qty-controls button {
     width: 44px;
     height: 44px;
-    border: none;
-    background: var(--card-bg);
-    color: var(--text-primary);
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
     border-radius: 12px;
     font-size: 20px;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .qty-controls button {
+    background: #334155;
+    color: #ffffff;
+    border-color: #475569;
+}
+
+.qty-controls button:hover {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
 }
 
 .add-to-cart-hero {
@@ -156,6 +172,16 @@
     font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+[data-theme='dark'] .remove-from-cart-hero {
+    background: rgba(225, 29, 72, 0.2);
+    color: #fb7185;
+    border-color: rgba(225, 29, 72, 0.4);
 }
 
 .remove-from-cart-hero:hover {
