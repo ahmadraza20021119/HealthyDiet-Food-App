@@ -37,11 +37,25 @@ const Chatbot = () => {
                 userProfile: userProfile
             });
 
-            const aiMessage = { role: 'assistant', content: response.data.reply };
+            const aiMessage = { 
+                role: 'assistant', 
+                content: response.data.reply,
+                cached: response.data.cached || false
+            };
             setMessages(prev => [...prev, aiMessage]);
         } catch (error) {
             console.error("Chat error:", error);
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I am having some trouble connecting to my brain right now.' }]);
+
+            let errorContent;
+            if (error.response && error.response.status === 503) {
+                // Rate limit / all models exhausted
+                const data = error.response.data;
+                errorContent = `⚠️ **AI Quota Reached**\n\n${data.message || 'The AI service has reached its daily limit.'}\n\n⏳ Estimated reset in: **${data.retryAfter || 'a few hours'}**\n\n💡 *Tip: Try again after the reset, or ask a question you've asked before — cached responses still work!*`;
+            } else {
+                errorContent = 'Sorry, I am having some trouble connecting to my brain right now. Please try again in a moment! 🔄';
+            }
+
+            setMessages(prev => [...prev, { role: 'assistant', content: errorContent, isError: true }]);
         } finally {
             setLoading(false);
         }
@@ -71,13 +85,22 @@ const Chatbot = () => {
 
                     <div className="chat-messages">
                         {messages.map((msg, index) => (
-                            <div key={index} className={`message ${msg.role}`}>
+                            <div key={index} className={`message ${msg.role} ${msg.isError ? 'error-message' : ''}`}>
                                 <div className="message-content">
                                     <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                    {msg.cached && (
+                                        <span className="cached-badge" title="This response was served from cache">⚡ Instant</span>
+                                    )}
                                 </div>
                             </div>
                         ))}
-                        {loading && <div className="message assistant">Typing...</div>}
+                        {loading && (
+                            <div className="message assistant">
+                                <div className="typing-indicator">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </div>
+                        )}
                         <div ref={messagesEndRef} />
                     </div>
 
