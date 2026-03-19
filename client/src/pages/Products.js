@@ -27,7 +27,7 @@ const Products = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: "As my elite Executive Chef and Clinical Nutritionist, please provide EXACTLY 5 distinct, delicious, and highly specific recipe recommendations I can cook at home that fit my exact profile. Provide a brief 3-step cooking instruction for each, and briefly explain why they fit my metabolic goals.",
+          message: "As my elite Executive Chef and Clinical Nutritionist, please provide EXACTLY 2 distinct, delicious, and highly specific recipe recommendations I can cook at home that fit my exact profile. Provide a brief 3-step cooking instruction for each, and briefly explain why they fit my metabolic goals.",
           userProfile: userInfo
         })
       });
@@ -59,15 +59,14 @@ const Products = () => {
       const data = await response.json();
       setProducts(data);
 
-      if (!viewAll && Object.keys(userInfo).length > 0) {
-        fetchAiSuggestion(userInfo);
-      }
+      // Removed automatic AI call - now triggered by button
+
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }
-  }, [viewAll, fetchAiSuggestion]);
+  }, [viewAll]);
 
   useEffect(() => {
     // Check if user is admin
@@ -81,8 +80,9 @@ const Products = () => {
     }
 
     const userInfoRaw = localStorage.getItem("userInfo");
-    // Only redirect if NOT admin and NO userInfo
-    if (!userInfoRaw && !isAdmin) {
+    const isSubmitted = localStorage.getItem("userInfoSubmitted") === "true";
+    // Only redirect if NOT admin and NO userInfo and NOT explicitly skipped/submitted
+    if (!userInfoRaw && !isAdmin && !isSubmitted) {
       // Small check for the case where state is updating
       const checkUser = JSON.parse(localStorage.getItem("user") || "{}");
       if (checkUser.role !== "admin") {
@@ -269,7 +269,7 @@ const Products = () => {
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', fontSize: '18px', margin: 0 }}><Sparkles size={20} color="#10b981"/> Chef's Custom Recipes</h4>
           </div>
           {aiLoading ? (
-            <p style={{fontStyle:'italic', color:'var(--text-secondary)'}}>Chef is reviewing your profile and designing 5 custom recipes...</p>
+            <p style={{fontStyle:'italic', color:'var(--text-secondary)'}}>Chef is reviewing your profile and designing 2 custom recipes...</p>
           ) : aiSuggestion ? (
             <div>
               <div className="message-content" style={{color:'var(--text-primary)', fontSize:'15px', lineHeight:'1.8'}}>
@@ -304,7 +304,16 @@ const Products = () => {
               </div>
             </div>
           ) : (
-            <p style={{color:'var(--text-secondary)'}}>Unable to generate a recipe at this time.</p>
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Want something unique? Let our Chef design a custom recipe for you.</p>
+              <button 
+                className="btn-modern" 
+                onClick={() => fetchAiSuggestion(JSON.parse(localStorage.getItem("userInfo") || "{}"))}
+                style={{ padding: '12px 25px' }}
+              >
+                <Sparkles size={18} style={{ marginRight: '8px' }} /> Cook Custom Recipes
+              </button>
+            </div>
           )}
         </motion.div>
       )}

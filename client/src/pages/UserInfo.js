@@ -165,9 +165,23 @@ const UserInfo = () => {
           required
         />
 
-        <button type="submit">
-          {localStorage.getItem("userInfoSubmitted") ? "Update Profile" : "Continue to Diet Recommendations"}
-        </button>
+        <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+          <button type="submit" style={{ flex: 2 }}>
+            {localStorage.getItem("userInfoSubmitted") ? "Update Profile" : "Continue to Diet Recommendations"}
+          </button>
+          {!localStorage.getItem("userInfoSubmitted") && (
+            <button 
+              type="button" 
+              onClick={() => {
+                localStorage.setItem("userInfoSubmitted", "true");
+                navigate("/products");
+              }}
+              style={{ flex: 1, backgroundColor: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}
+            >
+              Skip for now
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

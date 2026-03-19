@@ -80,10 +80,11 @@ router.get('/status', (req, res) => {
     const hasKey = !!(apiKey && !apiKey.includes('your_'));
 
     const modelsToTry = [
+        "gemini-2.5-flash",
+        "gemini-2.5-pro",
         "gemini-2.0-flash",
-        "gemini-2.0-flash-001",
-        "gemini-1.5-flash",
-        "gemini-1.5-pro"
+        "gemini-flash-latest",
+        "gemini-pro-latest"
     ];
 
     const modelStatus = modelsToTry.map(model => ({
@@ -122,10 +123,11 @@ router.post('/recommend', async (req, res) => {
 
     // ── Model priority: prefer models with remaining quota ────────────────
     const allModels = [
+        "gemini-2.5-flash",
+        "gemini-2.5-pro",
         "gemini-2.0-flash",
-        "gemini-2.0-flash-001",
-        "gemini-1.5-flash",
-        "gemini-1.5-pro"
+        "gemini-flash-latest",
+        "gemini-pro-latest"
     ];
 
     // Sort: available models first, then exhausted ones as fallback
@@ -178,6 +180,8 @@ router.post('/recommend', async (req, res) => {
             } catch (err) {
                 const errMsg = err.message || '';
                 console.warn(`⚠️ Model ${modelName} attempt ${attempt + 1} failed: ${errMsg}`);
+                console.error(`Full Error for ${modelName}:`, err.message);
+                if (err.stack) console.error(err.stack);
 
                 // If rate limited (429), mark model and skip retries
                 if (errMsg.includes('429') || errMsg.toLowerCase().includes('rate limit') || errMsg.toLowerCase().includes('quota')) {
@@ -206,7 +210,7 @@ router.post('/recommend', async (req, res) => {
     console.error("❌ All Gemini models failed.");
     res.status(503).json({ 
         error: "AI service temporarily unavailable",
-        message: "All AI models have reached their daily limit. The limits reset at midnight Pacific Time (~12:30 PM IST). Please try again later!",
+        message: "We encountered an issue connecting to our AI models. This may be due to quota limits or API configuration.",
         retryAfter: getTimeUntilReset()
     });
 });
