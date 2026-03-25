@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
-    LayoutDashboard, Package, ShoppingBag, Users, Settings,
-    Plus, Gem, Pencil, Trash2, Search, LogOut, TrendingUp, Info
+    LayoutDashboard, Package, ShoppingBag, Users,
+    Plus, Gem, Pencil, Trash2, Search, LogOut, TrendingUp
 } from "lucide-react";
 import "../styles/App.css";
 
@@ -260,13 +260,17 @@ const AdminDashboard = () => {
                                             <td>#{order.id}</td>
                                             <td>{order.user_name}</td>
                                             <td>₹{order.total_price}</td>
-                                            <td><span className={`status-badge ${order.status === 'delivered' ? 'status-active' : 'status-pending'}`}>{order.status}</span></td>
+                                            <td>
+                                                <span className={`status-badge status-${order.status === 'delivered' ? 'active' : order.status}`}>
+                                                    {order.status}
+                                                </span>
+                                            </td>
                                             <td>{new Date(order.created_at).toLocaleDateString()}</td>
                                             <td>
                                                 <select
                                                     value={order.status}
                                                     onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
-                                                    style={{ padding: '6px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white' }}
+                                                    className="admin-status-select"
                                                 >
                                                     <option value="pending">Pending</option>
                                                     <option value="paid">Paid</option>

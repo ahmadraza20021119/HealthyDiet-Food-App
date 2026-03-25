@@ -2015,6 +2015,21 @@ body {
   color: #f59e0b;
 }
 
+.status-paid {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.status-processing {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.status-cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
 .form-grid-modern {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2078,6 +2093,41 @@ body {
 .delete-btn-modern:hover {
   background: #ef4444;
   color: white;
+}
+
+.admin-status-select {
+  padding: 10px 36px 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  min-width: 140px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+}
+
+.admin-status-select:hover {
+  border-color: var(--accent-primary);
+  background-color: var(--card-bg);
+}
+
+.admin-status-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+  transform: translateY(-1px);
+}
+
+.admin-status-select option {
+  background: var(--card-bg);
+  color: var(--text-primary);
 }
 
 /* Checkout Page Styles */
