@@ -4,7 +4,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
     User, Mail, Phone, MapPin, ShoppingBag, 
-    ChevronRight, PieChart, Activity, Star, 
+    Activity, Star, 
     Award, Clock, CheckCircle, Zap, TrendingUp
 } from "lucide-react";
 import "../styles/Profile.css";
@@ -301,6 +301,12 @@ const Profile = () => {
                                                 <span className="order-meta-info">
                                                     {items.length > 1 ? `+ ${items.length - 1} other items` : 'Individual Pack'} • {new Date(order.created_at).toLocaleDateString()}
                                                 </span>
+                                                {order.delivery_partner && (
+                                                    <div className="delivery-track-info">
+                                                        <span className={`partner-icn-small ${order.delivery_partner}`}>{order.delivery_partner}</span>
+                                                        <span className="track-id">Track ID: #{order.tracking_id}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="order-val-final">₹{order.total_price}</div>
                                         </div>

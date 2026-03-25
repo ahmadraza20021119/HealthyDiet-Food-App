@@ -119,7 +119,7 @@ app.get('/orders/me', authMiddleware, async (req, res) => {
   const user_id = req.user.id;
   try {
     const [orders] = await db.query(`
-      SELECT o.id, o.total_price, o.status, o.created_at,
+      SELECT o.id, o.total_price, o.status, o.created_at, o.delivery_partner, o.tracking_id,
              (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', p.name, 'image', p.image))
               FROM order_items oi
               JOIN products p ON oi.product_id = p.id
@@ -139,7 +139,7 @@ app.get('/orders/me', authMiddleware, async (req, res) => {
 app.get('/admin/orders', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const [orders] = await db.query(`
-      SELECT o.id, o.total_price, o.status, o.created_at, u.name as user_name
+      SELECT o.id, o.total_price, o.status, o.created_at, o.delivery_partner, o.tracking_id, u.name as user_name
       FROM orders o
       JOIN users u ON o.user_id = u.id
       ORDER BY o.created_at DESC
@@ -155,7 +155,7 @@ app.put('/admin/orders/:id/status', authMiddleware, adminMiddleware, async (req,
   const { status } = req.body;
   const orderId = req.params.id;
   try {
-    const validStatuses = ['pending', 'paid', 'processing', 'delivered', 'cancelled'];
+    const validStatuses = ['pending', 'paid', 'processing', 'accepted', 'preparing', 'out_for_delivery', 'delivered', 'cancelled'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
@@ -163,6 +163,23 @@ app.put('/admin/orders/:id/status', authMiddleware, adminMiddleware, async (req,
     res.json({ message: 'Order status updated' });
   } catch (err) {
     console.error('Error updating order status:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.put('/admin/orders/:id/assign', authMiddleware, adminMiddleware, async (req, res) => {
+  const { delivery_partner } = req.body;
+  const orderId = req.params.id;
+  try {
+    if (!['swiggy', 'zomato'].includes(delivery_partner)) {
+      return res.status(400).json({ error: 'Invalid delivery partner' });
+    }
+    const tracking_id = `${delivery_partner.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
+    const status = 'out_for_delivery';
+    await db.query('UPDATE orders SET delivery_partner = ?, tracking_id = ?, status = ? WHERE id = ?', [delivery_partner, tracking_id, status, orderId]);
+    res.json({ message: 'Delivery partner assigned', tracking_id, status, delivery_partner });
+  } catch (err) {
+    console.error('Error assigning partner:', err);
     res.status(500).json({ error: 'Database error' });
   }
 });

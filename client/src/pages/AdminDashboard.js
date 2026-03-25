@@ -116,6 +116,16 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleAssignPartner = async (orderId, partner) => {
+        try {
+            await axios.put(`http://localhost:5000/admin/orders/${orderId}/assign`, { delivery_partner: partner }, { withCredentials: true });
+            fetchOrders();
+        } catch (err) {
+            console.error("Error assigning partner", err);
+            alert("Failed to assign partner");
+        }
+    };
+
     const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -251,6 +261,7 @@ const AdminDashboard = () => {
                                         <th>Total</th>
                                         <th>Status</th>
                                         <th>Date</th>
+                                        <th>Delivery</th>
                                         <th>Update Status</th>
                                     </tr>
                                 </thead>
@@ -267,6 +278,21 @@ const AdminDashboard = () => {
                                             </td>
                                             <td>{new Date(order.created_at).toLocaleDateString()}</td>
                                             <td>
+                                                {order.delivery_partner ? (
+                                                    <div className="partner-badge">
+                                                        <span className={`partner-icn ${order.delivery_partner}`}>{order.delivery_partner}</span>
+                                                        <div style={{ fontSize: '11px', marginTop: '4px', color: '#64748b' }}>#{order.tracking_id}</div>
+                                                    </div>
+                                                ) : ['accepted', 'preparing'].includes(order.status) ? (
+                                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                                        <button className="partner-btn swiggy" onClick={() => handleAssignPartner(order.id, 'swiggy')}>Swiggy</button>
+                                                        <button className="partner-btn zomato" onClick={() => handleAssignPartner(order.id, 'zomato')}>Zomato</button>
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>Accept order first</span>
+                                                )}
+                                            </td>
+                                            <td>
                                                 <select
                                                     value={order.status}
                                                     onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
@@ -274,7 +300,9 @@ const AdminDashboard = () => {
                                                 >
                                                     <option value="pending">Pending</option>
                                                     <option value="paid">Paid</option>
-                                                    <option value="processing">Processing</option>
+                                                    <option value="accepted">Accepted</option>
+                                                    <option value="preparing">Preparing</option>
+                                                    <option value="out_for_delivery">Out for Delivery</option>
                                                     <option value="delivered">Delivered</option>
                                                     <option value="cancelled">Cancelled</option>
                                                 </select>
