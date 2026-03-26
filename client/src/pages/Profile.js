@@ -285,7 +285,11 @@ const Profile = () => {
                                     const items = order.items || [];
                                     const firstItem = items[0] || {};
                                     return (
-                                        <div className="order-item-premium" key={order.id}>
+                                        <div 
+                                            className="order-item-premium" 
+                                            key={order.id}
+                                            onClick={() => navigate(`/track/${order.id}`)}
+                                        >
                                             <div className="order-visual">
                                                 {firstItem.image ? (
                                                     <img src={firstItem.image} alt="order" />

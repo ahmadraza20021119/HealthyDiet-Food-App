@@ -9,6 +9,7 @@ import "../styles/App.css";
 const Products = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [viewAll, setViewAll] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -168,6 +169,11 @@ const Products = () => {
     </div>
   );
 
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    p.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="products-container-modern">
       <div className="products-controls">
@@ -178,6 +184,18 @@ const Products = () => {
         >
           <span className="badge-modern">{viewAll ? "Browse Library" : "Tailored For You"}</span>
           <h1>{viewAll ? "All Healthy" : "Recommended"} <span className="gradient-text">Meals</span></h1>
+          
+          <div className="search-bar-modern" style={{ marginTop: '25px', display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', padding: '12px 25px', borderRadius: '50px', border: '1px solid var(--border-color)', maxWidth: '500px', margin: '25px auto 40px' }}>
+            <Filter size={18} color="var(--text-secondary)" />
+            <input 
+              type="text" 
+              placeholder="Search by meal name or ingredient..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: 1, background: 'transparent', border: 'none', marginLeft: '15px', color: 'var(--text-primary)', outline: 'none', fontSize: '15px' }}
+            />
+          </div>
+
           <p>
             {viewAll
               ? "Exploring our complete collection of nutrient-dense, chef-crafted meals."
@@ -204,8 +222,8 @@ const Products = () => {
       <div className="product-grid-modern">
         {loading ? (
           [...Array(6)].map((_, i) => <SkeletonItem key={i} />)
-        ) : products.length > 0 ? (
-          products.map((product, idx) => (
+        ) : filteredProducts.length > 0 ? (
+          filteredProducts.map((product, idx) => (
             <motion.div
               key={product.id}
               className="product-card-modern"

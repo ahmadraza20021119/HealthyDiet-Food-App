@@ -138,12 +138,12 @@ const AdminDashboard = () => {
                     <>
                         <div className="admin-stats-grid">
                             <div className="stat-card blue">
-                                <h3>Active Meals</h3>
+                                <h3>Total Products</h3>
                                 <p>{products.length}</p>
                             </div>
                             <div className="stat-card green">
-                                <h3>Total Volume</h3>
-                                <p>₹{products.reduce((acc, p) => acc + (parseFloat(p.price) || 0), 0).toLocaleString()}</p>
+                                <h3>Total Revenue</h3>
+                                <p>₹{orders.filter(o => o.status !== 'cancelled').reduce((acc, o) => acc + (parseFloat(o.total_price) || 0), 0).toLocaleString()}</p>
                             </div>
                             <div className="stat-card orange">
                                 <h3>Total Orders</h3>
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
                         <div className="admin-content-card">
                             <div className="table-header-box">
                                 <h3>Recent Activity</h3>
-                                <button className="btn-modern-outline" onClick={() => setActiveTab("products")}>View All</button>
+                                <button className="btn-modern-outline" onClick={() => setActiveTab("orders")}>View All Orders</button>
                             </div>
                             <div className="table-responsive">
                                 <table className="admin-table">
@@ -162,19 +162,26 @@ const AdminDashboard = () => {
                                             <th>Type</th>
                                             <th>Details</th>
                                             <th>Status</th>
+                                            <th>Time</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td><div className="product-info-cell">Order #102</div></td>
-                                            <td>Sara Ahmed placed an order for ₹850</td>
-                                            <td><span className="status-badge status-active">Pending</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><div className="product-info-cell">New User</div></td>
-                                            <td>John Doe joined the platform</td>
-                                            <td><span className="status-badge status-active">Success</span></td>
-                                        </tr>
+                                        {orders.slice(0, 5).map(order => (
+                                            <tr key={`order-${order.id}`}>
+                                                <td><div className="product-info-cell"><ShoppingBag size={16} /> Order #{order.id}</div></td>
+                                                <td>{order.user_name} placed an order for ₹{order.total_price}</td>
+                                                <td><span className={`status-badge status-${order.status === 'delivered' ? 'active' : order.status}`}>{order.status}</span></td>
+                                                <td>{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                                            </tr>
+                                        ))}
+                                        {users.slice(0, 3).map(user => (
+                                            <tr key={`user-${user.id}`}>
+                                                <td><div className="product-info-cell"><Users size={16} /> New User</div></td>
+                                                <td>{user.name} joined the platform</td>
+                                                <td><span className="status-badge status-active">Active</span></td>
+                                                <td>{user.email}</td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>

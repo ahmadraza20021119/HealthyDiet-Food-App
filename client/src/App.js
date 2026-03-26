@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AuthChoice from "./pages/AuthChoice";
 import MealDetail from "./pages/MealDetail";
 import Checkout from "./pages/Checkout";
+import TrackOrder from "./pages/TrackOrder";
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
 import "./styles/App.css";
@@ -59,6 +60,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/track/:id" element={<TrackOrder />} />
         <Route path="/product/:id" element={<MealDetail />} />
         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       </Routes>
