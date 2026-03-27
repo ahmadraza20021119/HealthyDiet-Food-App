@@ -28,6 +28,7 @@ const Checkout = () => {
         pincode: ""
     });
     const [paymentMethod, setPaymentMethod] = useState("upi");
+    const [orderId, setOrderId] = useState(null);
 
     useEffect(() => {
         const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -72,6 +73,7 @@ const Checkout = () => {
                 });
 
                 localStorage.removeItem("cart");
+                setOrderId(response.data.orderId);
                 setStep(4); // Show success
             }
         } catch (error) {
@@ -290,7 +292,7 @@ const Checkout = () => {
                             <h1>Order Success!</h1>
                             <p>Thank you for choosing us. Your nutritional journey is being prepared by our chefs.</p>
                             <div className="order-badge">
-                                Order ID: #{Math.floor(Math.random() * 90000) + 10000}
+                                Order ID: #{orderId || '...'}
                             </div>
                             <button className="checkout-primary-btn" onClick={() => navigate("/profile")}>
                                 View My Orders

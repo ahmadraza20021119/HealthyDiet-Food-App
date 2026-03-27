@@ -9,12 +9,14 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) UNIQUE,
   password VARCHAR(255),
   phone VARCHAR(20),
-  address TEXT
+  address TEXT,
+  role VARCHAR(20) DEFAULT 'user'
 );
 
 -- User info table
 CREATE TABLE IF NOT EXISTS user_info (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  userId INT,
   name VARCHAR(255),
   age INT,
   gender VARCHAR(10),
@@ -24,18 +26,23 @@ CREATE TABLE IF NOT EXISTS user_info (
   health_goal VARCHAR(50),
   dietary_preference VARCHAR(50),
   allergies TEXT,
-  food_intake VARCHAR(50)
+  food_intake VARCHAR(50),
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Products table
 CREATE TABLE IF NOT EXISTS products (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255),
+  name VARCHAR(255) NOT NULL,
   description TEXT,
-  price DECIMAL(10,2),
-  image VARCHAR(255),
-  health_goal VARCHAR(50),
-  dietary_preference VARCHAR(50)
+  price DECIMAL(10,2) NOT NULL,
+  image VARCHAR(1000),
+  health_goal ENUM('weightLoss', 'weightGain', 'muscleGain', 'maintenance') DEFAULT 'maintenance',
+  dietary_preference ENUM('vegan', 'vegetarian', 'nonVegetarian', 'keto', 'standard') DEFAULT 'standard',
+  calories INT DEFAULT 0,
+  protein INT DEFAULT 0,
+  carbs INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Orders table
@@ -43,7 +50,14 @@ CREATE TABLE IF NOT EXISTS orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
   total_price DECIMAL(10,2),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  status ENUM('pending', 'paid', 'processing', 'accepted', 'preparing', 'out_for_delivery', 'delivered', 'cancelled') DEFAULT 'pending',
+  shipping_address TEXT,
+  payment_method VARCHAR(50),
+  transaction_id VARCHAR(100),
+  delivery_partner VARCHAR(20),
+  tracking_id VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Order items table
@@ -53,18 +67,40 @@ CREATE TABLE IF NOT EXISTS order_items (
   product_id INT,
   quantity INT,
   subtotal DECIMAL(10,2),
-  FOREIGN KEY (order_id) REFERENCES orders(id),
-  FOREIGN KEY (product_id) REFERENCES products(id)
+  instructions TEXT,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
 );
 
--- Insert sample products
-INSERT INTO products (name, description, price, image, health_goal, dietary_preference) VALUES
-('Grilled Chicken Salad', 'Healthy grilled chicken with fresh veggies', 9.99, '/images/chicken-salad.jpg', 'weightLoss', 'nonVegetarian'),
-('Quinoa Veggie Bowl', 'Nutritious quinoa with mixed vegetables', 8.49, '/images/quinoa-bowl.jpg', 'weightLoss', 'vegan'),
-('Avocado Toast & Eggs', 'Whole grain toast with avocado and eggs', 7.99, '/images/avocado-toast.jpg', 'muscleGain', 'nonVegetarian'),
-('Berry Protein Smoothie', 'Smoothie with berries and protein powder', 5.99, '/images/berry-smoothie.jpg', 'muscleGain', 'vegan'),
-('Tofu Stir Fry', 'Stir fried tofu with vegetables', 8.99, '/images/tofu-stir-fry.jpg', 'weightGain', 'vegan');
+-- Reviews table
+CREATE TABLE IF NOT EXISTS reviews (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT,
+  user_id INT,
+  user_name VARCHAR(255),
+  rating INT CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
--- Insert a test user
-INSERT INTO users (name, email, password, phone, address) VALUES
-('Test User', 'test@example.com', 'password', '1234567890', 'Test Address');
+-- Insert sample products if empty
+INSERT INTO products (name, description, price, image, health_goal, dietary_preference, calories, protein, carbs)
+SELECT * FROM (
+  SELECT 'Grilled Chicken Salad', 'Healthy grilled chicken with fresh veggies', 499.00, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c', 'weightLoss', 'nonVegetarian', 350, 45, 10
+  UNION ALL
+  SELECT 'Quinoa Veggie Bowl', 'Nutritious quinoa with mixed vegetables', 399.00, 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd', 'weightLoss', 'vegan', 280, 12, 45
+  UNION ALL
+  SELECT 'Avocado Toast & Eggs', 'Whole grain toast with avocado and eggs', 299.00, 'https://images.unsplash.com/photo-1525351484163-7529414344d8', 'muscleGain', 'nonVegetarian', 420, 18, 25
+  UNION ALL
+  SELECT 'Berry Protein Smoothie', 'Smoothie with berries and protein powder', 199.00, 'https://images.unsplash.com/photo-1553530666-ba11a7da3888', 'muscleGain', 'vegan', 250, 25, 30
+  UNION ALL
+  SELECT 'Tofu Stir Fry', 'Stir fried tofu with vegetables', 349.00, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c', 'weightGain', 'vegan', 380, 20, 40
+) AS tmp
+WHERE NOT EXISTS (SELECT 1 FROM products LIMIT 1);
+
+-- Insert admin user if not exists
+INSERT INTO users (name, email, password, role)
+SELECT 'Admin', 'admin@diet.com', 'admin123', 'admin'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@diet.com');

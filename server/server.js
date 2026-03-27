@@ -119,7 +119,7 @@ app.get('/orders/me', authMiddleware, async (req, res) => {
   const user_id = req.user.id;
   try {
     const [orders] = await db.query(`
-      SELECT o.id, o.total_price, o.status, o.created_at, o.delivery_partner, o.tracking_id,
+      SELECT o.id, o.total_price, o.status, o.created_at, o.delivery_partner, o.tracking_id, o.shipping_address,
              (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', p.name, 'image', p.image))
               FROM order_items oi
               JOIN products p ON oi.product_id = p.id
@@ -131,6 +131,31 @@ app.get('/orders/me', authMiddleware, async (req, res) => {
     res.json(orders);
   } catch (err) {
     console.error('Error fetching user orders:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// Get specific order (for tracking)
+app.get('/orders/:id', authMiddleware, async (req, res) => {
+  const user_id = req.user.id;
+  const order_id = req.params.id;
+  try {
+    const [orders] = await db.query(`
+      SELECT o.id, o.total_price, o.status, o.created_at, o.delivery_partner, o.tracking_id, o.shipping_address,
+             (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', p.name, 'image', p.image))
+              FROM order_items oi
+              JOIN products p ON oi.product_id = p.id
+              WHERE oi.order_id = o.id) as items
+      FROM orders o
+      WHERE o.id = ? AND (o.user_id = ? OR ?)
+    `, [order_id, user_id, req.user.role === 'admin']);
+
+    if (orders.length === 0) {
+      return res.status(404).json({ error: 'Order not found or access denied' });
+    }
+    res.json(orders[0]);
+  } catch (err) {
+    console.error('Error fetching order:', err);
     res.status(500).json({ error: 'Database error' });
   }
 });

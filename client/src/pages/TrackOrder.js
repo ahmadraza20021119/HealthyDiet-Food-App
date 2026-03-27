@@ -17,10 +17,9 @@ const TrackOrder = () => {
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
-                // We'll use the existing /orders/me endpoint and filter or a new one
-                const response = await axios.get("http://localhost:5000/orders/me", { withCredentials: true });
-                const foundOrder = response.data.find(o => o.id === parseInt(id));
-                setOrder(foundOrder);
+                // Fetch the specific order by ID
+                const response = await axios.get(`http://localhost:5000/orders/${id}`, { withCredentials: true });
+                setOrder(response.data);
             } catch (err) {
                 console.error("Error fetching order details:", err);
             } finally {
