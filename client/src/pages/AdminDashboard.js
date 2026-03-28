@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     const fetchProducts = async () => {
         try {
             const res = await axios.get("http://localhost:5000/products");
-            setProducts(res.data);
+            setProducts(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Error fetching products", err);
         }
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
     const fetchOrders = async () => {
         try {
             const res = await axios.get("http://localhost:5000/admin/orders", { withCredentials: true });
-            setOrders(res.data);
+            setOrders(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Error fetching orders", err);
         }
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
     const fetchUsers = async () => {
         try {
             const res = await axios.get("http://localhost:5000/admin/users", { withCredentials: true });
-            setUsers(res.data);
+            setUsers(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Error fetching users", err);
         }
@@ -126,10 +126,10 @@ const AdminDashboard = () => {
         }
     };
 
-    const filteredProducts = products.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredProducts = Array.isArray(products) ? products.filter(p =>
+        p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : [];
 
     const renderContent = () => {
         switch (activeTab) {
@@ -139,7 +139,7 @@ const AdminDashboard = () => {
                         <div className="admin-stats-grid">
                             <div className="stat-card blue">
                                 <h3>Total Products</h3>
-                                <p>{products.length}</p>
+                                <p>{Array.isArray(products) ? products.length : 0}</p>
                             </div>
                             <div className="stat-card green">
                                 <h3>Total Revenue</h3>
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
                             </div>
                             <div className="stat-card orange">
                                 <h3>Total Orders</h3>
-                                <p>{orders.length}</p>
+                                <p>{Array.isArray(orders) ? orders.length : 0}</p>
                             </div>
                         </div>
                         <div className="admin-content-card">
@@ -166,7 +166,7 @@ const AdminDashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {orders.slice(0, 5).map(order => (
+                                        {Array.isArray(orders) && orders.slice(0, 5).map(order => (
                                             <tr key={`order-${order.id}`}>
                                                 <td><div className="product-info-cell"><ShoppingBag size={16} /> Order #{order.id}</div></td>
                                                 <td>{order.user_name} placed an order for ₹{order.total_price}</td>
@@ -174,7 +174,7 @@ const AdminDashboard = () => {
                                                 <td>{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                                             </tr>
                                         ))}
-                                        {users.slice(0, 3).map(user => (
+                                        {Array.isArray(users) && users.slice(0, 3).map(user => (
                                             <tr key={`user-${user.id}`}>
                                                 <td><div className="product-info-cell"><Users size={16} /> New User</div></td>
                                                 <td>{user.name} joined the platform</td>
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredProducts.map(product => (
+                                    {Array.isArray(filteredProducts) && filteredProducts.map(product => (
                                         <tr key={product.id}>
                                             <td>
                                                 <div className="product-info-cell">
@@ -273,7 +273,7 @@ const AdminDashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {orders.map(order => (
+                                    {Array.isArray(orders) && orders.map(order => (
                                         <tr key={order.id}>
                                             <td>#{order.id}</td>
                                             <td>{order.user_name}</td>
@@ -337,7 +337,7 @@ const AdminDashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.map(user => (
+                                    {Array.isArray(users) && users.map(user => (
                                         <tr key={user.id}>
                                             <td><strong>{user.name}</strong></td>
                                             <td>{user.email}</td>

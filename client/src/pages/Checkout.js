@@ -8,9 +8,7 @@ import {
     CheckCircle,
     ArrowLeft,
     ShieldCheck,
-    Smartphone,
-    MapPin,
-    Package
+    Smartphone
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import "../styles/App.css";

@@ -51,14 +51,18 @@ const Products = () => {
       if (!viewAll) {
         const goal = userInfo.healthGoal;
         const type = userInfo.dietaryPreference;
-        if (goal || type) {
-          url += `?goal=${goal}&type=${type}`;
+        const queryParams = [];
+        if (goal) queryParams.push(`goal=${goal}`);
+        if (type) queryParams.push(`type=${type}`);
+        
+        if (queryParams.length > 0) {
+          url += `?${queryParams.join("&")}`;
         }
       }
 
       const response = await fetch(url);
       const data = await response.json();
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
 
       // Removed automatic AI call - now triggered by button
 
@@ -169,10 +173,10 @@ const Products = () => {
     </div>
   );
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredProducts = Array.isArray(products) ? products.filter(p => 
+    p.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     p.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
   return (
     <div className="products-container-modern">

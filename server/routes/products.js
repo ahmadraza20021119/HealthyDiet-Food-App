@@ -16,12 +16,12 @@ router.get('/products', async (req, res) => {
     const conditions = [];
     const params = [];
 
-    if (goal && goal !== 'maintenance') {
+    if (goal) {
       conditions.push("p.health_goal = ?");
       params.push(goal);
     }
     
-    if (type && type !== 'standard') {
+    if (type) {
       conditions.push("p.dietary_preference = ?");
       params.push(type);
     }
